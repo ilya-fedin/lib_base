@@ -55,6 +55,7 @@ PRIVATE
     base/platform/mac/base_last_input_mac.mm
     base/platform/mac/base_layout_switch_mac.h
     base/platform/mac/base_layout_switch_mac.mm
+    base/platform/mac/base_network_reachability_mac.cpp
     base/platform/mac/base_network_reachability_mac.h
     base/platform/mac/base_process_mac.h
     base/platform/mac/base_process_mac.mm
@@ -72,6 +73,7 @@ PRIVATE
     base/platform/win/base_last_input_win.h
     base/platform/win/base_layout_switch_win.cpp
     base/platform/win/base_layout_switch_win.h
+    base/platform/win/base_network_reachability_win.cpp
     base/platform/win/base_network_reachability_win.h
     base/platform/win/base_process_win.cpp
     base/platform/win/base_process_win.h

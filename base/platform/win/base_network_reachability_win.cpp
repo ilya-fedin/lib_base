@@ -4,6 +4,12 @@
 // For license and copyright information please follow this link:
 // https://github.com/desktop-app/legal/blob/master/LEGAL
 //
-#pragma once
+#include "base/platform/win/base_network_reachability_win.h"
 
-#include "base/platform/base_platform_network_reachability.h"
+namespace base::Platform {
+
+std::optional<bool> NetworkAvailable() {
+	return std::nullopt;
+}
+
+} // namespace base::Platform

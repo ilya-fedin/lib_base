@@ -7,11 +7,3 @@
 #pragma once
 
 #include "base/platform/base_platform_network_reachability.h"
-
-namespace base::Platform {
-
-inline std::optional<bool> NetworkAvailable() {
-	return std::nullopt;
-}
-
-} // namespace base::Platform
