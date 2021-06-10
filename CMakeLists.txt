@@ -35,6 +35,8 @@ PRIVATE
     base/platform/linux/base_linux_gtk_integration_p.h
     base/platform/linux/base_linux_gtk_integration.cpp
     base/platform/linux/base_linux_gtk_integration.h
+    base/platform/linux/base_linux_xdg_shell_integration.cpp
+    base/platform/linux/base_linux_xdg_shell_integration.h
     base/platform/linux/base_linux_library.cpp
     base/platform/linux/base_linux_library.h
     base/platform/linux/base_linux_xcb_utilities.cpp
@@ -197,6 +199,76 @@ if (DESKTOP_APP_DISABLE_X11_INTEGRATION)
     )
 endif()
 
+if (LINUX AND NOT DESKTOP_APP_DISABLE_WAYLAND_INTEGRATION)
+    find_package(ECM REQUIRED)
+    set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+    find_package(QtWaylandScanner REQUIRED)
+
+    set(xdg_shell_loc ${src_loc}/base/platform/linux/xdg-shell)
+
+    add_library(lib_base_xdg_shell STATIC)
+    add_library(desktop-app::lib_base_xdg_shell ALIAS lib_base_xdg_shell)
+    init_target(lib_base_xdg_shell)
+    set_target_properties(lib_base_xdg_shell PROPERTIES AUTOMOC ON)
+
+    ecm_add_qtwayland_client_protocol(xdg_shell_protocol_srcs
+        PROTOCOL ${xdg_shell_loc}/xdg-shell.xml
+        BASENAME xdg-shell
+    )
+
+    ecm_add_qtwayland_client_protocol(xdg_decoration_protocol_srcs
+        PROTOCOL ${xdg_shell_loc}/xdg-decoration-unstable-v1.xml
+        BASENAME xdg-decoration-unstable-v1
+    )
+
+    nice_target_sources(lib_base_xdg_shell ${xdg_shell_loc}
+    PRIVATE
+        main.cpp
+        qwaylandxdgdecorationv1.cpp
+        qwaylandxdgdecorationv1_p.h
+        qwaylandxdgshell.cpp
+        qwaylandxdgshell_p.h
+        qwaylandxdgshellintegration.cpp
+        qwaylandxdgshellintegration_p.h
+    )
+
+    target_sources(lib_base_xdg_shell
+    PRIVATE
+        ${xdg_shell_protocol_srcs}
+        ${xdg_decoration_protocol_srcs}
+    )
+
+    target_include_directories(lib_base_xdg_shell
+    PRIVATE
+        ${xdg_shell_loc}
+        ${CMAKE_CURRENT_BINARY_DIR}
+    )
+
+    target_compile_options(lib_base_xdg_shell
+    PRIVATE
+        -UQT_NO_KEYWORDS
+    )
+
+    target_compile_definitions(lib_base_xdg_shell
+    PRIVATE
+        QT_STATICPLUGIN
+    )
+
+    target_link_libraries(lib_base_xdg_shell
+    PRIVATE
+        desktop-app::external_qt
+    )
+else()
+    remove_target_sources(lib_base ${src_loc}
+        base/platform/linux/base_linux_xdg_shell_integration.cpp
+    )
+
+    nice_target_sources(lib_base ${src_loc}
+    PRIVATE
+        base/platform/linux/base_linux_xdg_shell_integration_dummy.cpp
+    )
+endif()
+
 if (DESKTOP_APP_DISABLE_GTK_INTEGRATION)
     remove_target_sources(lib_base ${src_loc}
         base/platform/linux/base_linux_gtk_integration_p.h
@@ -242,6 +314,13 @@ if (LINUX)
             desktop-app::external_xcb_record
             desktop-app::external_xcb_screensaver
             desktop-app::external_xcb
+        )
+    endif()
+
+    if (NOT DESKTOP_APP_DISABLE_WAYLAND_INTEGRATION)
+        target_link_libraries(lib_base
+        PUBLIC
+            desktop-app::lib_base_xdg_shell
         )
     endif()
 
