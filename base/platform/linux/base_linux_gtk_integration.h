@@ -14,9 +14,6 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 namespace base {
 namespace Platform {
 
-inline constexpr auto kDisableGtkIntegration = "DESKTOP_APP_DISABLE_GTK_INTEGRATION"_cs;
-inline constexpr auto kIgnoreGtkIncompatibility = "DESKTOP_APP_I_KNOW_ABOUT_GTK_INCOMPATIBILITY"_cs;
-
 class GtkIntegration {
 public:
 	static GtkIntegration *Instance();
@@ -25,9 +22,7 @@ public:
 		return _lib;
 	}
 
-	void prepareEnvironment();
 	void load();
-	void initializeSettings();
 	[[nodiscard]] bool loaded() const;
 
 	[[nodiscard]] bool checkVersion(

@@ -217,6 +217,74 @@ if (DESKTOP_APP_DISABLE_GTK_INTEGRATION)
     PRIVATE
         base/platform/linux/base_linux_gtk_integration_dummy.cpp
     )
+else()
+    add_library(lib_base_dummy_gtk_theme STATIC)
+    add_library(desktop-app::lib_base_dummy_gtk_theme ALIAS lib_base_dummy_gtk_theme)
+    init_target(lib_base_dummy_gtk_theme)
+
+    set_target_properties(lib_base_dummy_gtk_theme PROPERTIES AUTOMOC ON)
+
+    nice_target_sources(lib_base_dummy_gtk_theme ${src_loc}
+    PRIVATE
+        base/platform/linux/base_linux_dummy_gtk_theme.cpp
+    )
+
+    target_include_directories(lib_base_dummy_gtk_theme
+    PRIVATE
+        ${CMAKE_CURRENT_BINARY_DIR}
+    )
+
+    target_compile_definitions(lib_base_dummy_gtk_theme
+    PRIVATE
+        QT_STATICPLUGIN
+    )
+
+    target_link_libraries(lib_base_dummy_gtk_theme
+    PRIVATE
+        desktop-app::lib_base
+    )
+
+    add_library(lib_base_dummy_gtk_style STATIC)
+    add_library(desktop-app::lib_base_dummy_gtk_style ALIAS lib_base_dummy_gtk_style)
+    init_target(lib_base_dummy_gtk_style)
+
+    set_target_properties(lib_base_dummy_gtk_style PROPERTIES AUTOMOC ON)
+
+    nice_target_sources(lib_base_dummy_gtk_style ${src_loc}
+    PRIVATE
+        base/platform/linux/base_linux_dummy_gtk_style.cpp
+    )
+
+    target_include_directories(lib_base_dummy_gtk_style
+    PRIVATE
+        ${CMAKE_CURRENT_BINARY_DIR}
+    )
+
+    target_compile_definitions(lib_base_dummy_gtk_style
+    PRIVATE
+        QT_STATICPLUGIN
+    )
+
+    target_link_libraries(lib_base_dummy_gtk_style
+    PRIVATE
+        desktop-app::external_qt
+    )
+
+    add_library(lib_base_dummy_gtk_theme_linker OBJECT)
+    add_library(desktop-app::lib_base_dummy_gtk_theme_linker ALIAS lib_base_dummy_gtk_theme_linker)
+    init_target(lib_base_dummy_gtk_theme_linker)
+
+    nice_target_sources(lib_base_dummy_gtk_theme_linker ${src_loc}
+    PRIVATE
+        base/platform/linux/base_linux_dummy_gtk_theme_linker.cpp
+    )
+
+    target_link_libraries(lib_base_dummy_gtk_theme_linker
+    PUBLIC
+        desktop-app::lib_base_dummy_gtk_theme
+        desktop-app::lib_base_dummy_gtk_style
+        desktop-app::external_qt
+    )
 endif()
 
 target_include_directories(lib_base

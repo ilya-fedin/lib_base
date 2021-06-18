@@ -238,9 +238,7 @@ void Start(QJsonObject options) {
 
 	using base::Platform::GtkIntegration;
 	if (const auto integration = GtkIntegration::Instance()) {
-		integration->prepareEnvironment();
 		integration->load();
-		integration->initializeSettings();
 	} else {
 		g_warning("GTK integration is disabled, some features unavailable.");
 	}

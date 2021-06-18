@@ -188,48 +188,8 @@ GtkIntegration::GtkIntegration() {
 }
 
 GtkIntegration *GtkIntegration::Instance() {
-	static const auto useGtkIntegration = !qEnvironmentVariableIsSet(
-		kDisableGtkIntegration.utf8().constData());
-
-	if (!useGtkIntegration) {
-		return nullptr;
-	}
-
 	static GtkIntegration instance;
 	return &instance;
-}
-
-void GtkIntegration::prepareEnvironment() {
-#ifdef DESKTOP_APP_USE_PACKAGED // static binary doesn't contain qgtk3/qgtk2
-	// if gtk integration and qgtk3/qgtk2 platformtheme (or qgtk2 style)
-	// is used at the same time, the app will crash
-	if (!qEnvironmentVariableIsSet(
-			kIgnoreGtkIncompatibility.utf8().constData())) {
-		g_warning(
-			"Unfortunately, GTK integration "
-			"conflicts with qgtk2 platformtheme and style. "
-			"Therefore, QT_QPA_PLATFORMTHEME "
-			"and QT_STYLE_OVERRIDE will be unset.");
-
-		g_message(
-			"This can be ignored by setting %s environment variable "
-			"to any value, however, if qgtk2 theme or style is used, "
-			"this will lead to a crash.",
-			kIgnoreGtkIncompatibility.utf8().constData());
-
-		g_message(
-			"GTK integration can be disabled by setting %s to any value. "
-			"Keep in mind that this will lead to "
-			"some features being unavailable.",
-			kDisableGtkIntegration.utf8().constData());
-
-		qunsetenv("QT_QPA_PLATFORMTHEME");
-		qunsetenv("QT_STYLE_OVERRIDE");
-
-		// Don't allow qgtk3 to init gtk earlier than us
-		QGuiApplication::setDesktopSettingsAware(false);
-	}
-#endif // DESKTOP_APP_USE_PACKAGED
 }
 
 void GtkIntegration::load() {
@@ -251,20 +211,14 @@ void GtkIntegration::load() {
 	if (Loaded) {
 		LOAD_GTK_SYMBOL(_lib, gtk_check_version);
 		LOAD_GTK_SYMBOL(_lib, gtk_settings_get_default);
+
+		SetIconTheme();
+		SetCursorSize();
+		connectToSetting("gtk-icon-theme-name", SetIconTheme);
+		connectToSetting("gtk-cursor-theme-size", SetCursorSize);
 	} else {
 		LOG(("Could not load gtk-3 or gtk-x11-2.0!"));
 	}
-}
-
-void GtkIntegration::initializeSettings() {
-	if (!loaded()) {
-		return;
-	}
-
-	SetIconTheme();
-	SetCursorSize();
-	connectToSetting("gtk-icon-theme-name", SetIconTheme);
-	connectToSetting("gtk-cursor-theme-size", SetCursorSize);
 }
 
 bool GtkIntegration::loaded() const {

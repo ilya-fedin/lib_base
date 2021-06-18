@@ -16,13 +16,7 @@ GtkIntegration *GtkIntegration::Instance() {
 	return nullptr;
 }
 
-void GtkIntegration::prepareEnvironment() {
-}
-
 void GtkIntegration::load() {
-}
-
-void GtkIntegration::initializeSettings() {
 }
 
 bool GtkIntegration::loaded() const {

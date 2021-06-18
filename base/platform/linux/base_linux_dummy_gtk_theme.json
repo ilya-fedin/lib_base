@@ -1,0 +1,9 @@
+{
+    "Keys": [
+        "gtk3",
+        "gtk2",
+        "qt5gtk2",
+        "gnome",
+        "qgnomeplatform"
+    ]
+}
