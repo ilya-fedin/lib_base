@@ -21,6 +21,9 @@ using namespace gi::repository;
 class AppLaunchContext : public Gio::impl::AppLaunchContextImpl {
 public:
 	AppLaunchContext() : Gio::impl::AppLaunchContextImpl(this) {
+		if (const auto token = XdgActivationToken(); !token.isNull()) {
+			setenv("XDG_ACTIVATION_TOKEN", token.toStdString());
+		}
 		if (const auto parentWindowId = XDP::ParentWindowID()
 				; !parentWindowId.empty()) {
 			setenv("PARENT_WINDOW_ID", parentWindowId);
@@ -31,8 +34,10 @@ public:
 			Gio::AppInfo,
 			gi::Collection<GList, ::GFile*, gi::transfer_none_t>
 	) noexcept override {
-		if (const auto token = XdgActivationToken(); !token.isNull()) {
-			return token.toStdString();
+		if (const auto token = GLib::environ_getenv(
+				get_environment(),
+				"XDG_ACTIVATION_TOKEN")) {
+			return token;
 		}
 		return {};
 	}
