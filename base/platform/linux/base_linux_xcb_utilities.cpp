@@ -56,6 +56,12 @@ SharedConnection::SharedConnection()
 
 xcb_connection_t *GetConnectionFromQt() {
 #if defined QT_FEATURE_xcb && QT_CONFIG(xcb)
+	// If we failed to load the xcb library, we will crash anyway
+	static const auto xcb_connect = LoadSymbol("xcb_connect");
+	if (!xcb_connect) {
+		return nullptr;
+	}
+
 #if QT_VERSION >= QT_VERSION_CHECK(6, 2, 0)
 	using namespace QNativeInterface;
 	const auto native = qApp->nativeInterface<QX11Application>();
